@@ -2,7 +2,11 @@ module github.com/TekClinic/MicroService-Lib
 
 go 1.22
 
-require github.com/coreos/go-oidc/v3 v3.9.0
+require (
+	github.com/coreos/go-oidc/v3 v3.9.0
+	github.com/sa-/slicefunk v0.1.4
+	k8s.io/apimachinery v0.29.2
+)
 
 require (
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
