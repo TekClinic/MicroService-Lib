@@ -7,14 +7,16 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-const defaultGRPCPort = "9090"
-const envAuthIssuerURL = "AUTH_ISSUER"
-const envGRPCPort = "GRPC_PORT"
-
-const authAuditor = "account"
-
-const rolesSeparator = "."
-const rolesKey = "roles"
+const (
+	defaultGRPCPort = "9090"
+	envAuthIssuerURL = "AUTH_ISSUER"
+	envGRPCPort = "GRPC_PORT"
+	
+	authAuditor = "account"
+	
+	rolesSeparator = "."
+	rolesKey = "roles"
+)
 
 // BaseServiceServer contains a port on which the server listens for GRPC requests and provides JWT token verification.
 type BaseServiceServer interface {
