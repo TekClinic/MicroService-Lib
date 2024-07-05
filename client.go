@@ -14,13 +14,14 @@ type Service struct {
 	Port string
 }
 
-// GetAddr provides address of the service
+// GetAddr provides address of the service.
 func (s Service) GetAddr() string {
 	return s.Host + ":" + s.Port
 }
 
 // FetchServiceParameters returns a Service object that describes service named serviceName.
-// Host and Port of the Service are retrieved from environment variables MS_{serviceName}_HOST and MS_{serviceName}_PORT
+// Host and Port of the Service are retrieved from environment variables:
+// MS_{serviceName}_HOST and MS_{serviceName}_PORT.
 func FetchServiceParameters(serviceName string) (*Service, error) {
 	host, err := GetRequiredEnv(fmt.Sprintf(envMSHostPattern, strings.ToUpper(serviceName)))
 	if err != nil {
