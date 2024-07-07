@@ -6,97 +6,58 @@ including environment-based service parameters, logging, gRPC server/client setu
 This package simplifies common tasks in microservice architectures such as service discovery,
 configuration, and secure communication.
 
-## Functions
+## Configurable Environment Variables
 
-### Environment Variables
+This application uses several environment variables to configure various aspects of 
+the microservices, authentication, and logging. 
 
-- **GetRequiredEnv(key string) (string, error)**
-    - Retrieves the value of the required environment variable. Returns an error if the variable is not set.
+Below is a comprehensive list of these environment variables and their descriptions.
 
-- **GetOptionalEnv(key string, def string) string**
-    - Retrieves the value of the optional environment variable. Returns the default value if the variable is not set.
+### Client-Side Microservice Configuration
 
-### Microservice Configuration
+These environment variables are used to discover and connect to other microservices.
 
-- **FetchServiceParameters(serviceName string) (\*Service, error)**
-    - Returns a `Service` object with `Host` and `Port` values derived from environment
-      variables `MS_{serviceName}_HOST` and `MS_{serviceName}_PORT`.
+- **`MS_{serviceName}_HOST`**
+    - **Description:** The hostname of the microservice specified by `{serviceName}`.
+    - **Usage:** Defines the host for a given microservice.
+    - **Example:** For a service named `auth`, the variable would be `MS_AUTH_HOST`.
 
-### gRPC Server/Client Options
+- **`MS_{serviceName}_PORT`**
+    - **Description:** The port number on which the microservice specified by `{serviceName}` listens for GRPC requests.
+    - **Default:** `"9090"`
+    - **Usage:** Defines the port for a given microservice.
+    - **Example:** For a service named `auth`, the variable would be `MS_AUTH_PORT`.
 
-- **GetGRPCServerOptions() []grpc.ServerOption**
-    - Returns options for configuring a gRPC server with logging interceptors.
+- **`MS_SECURE_CONN`**
+  - **Description:** Indicates whether the microservice should use a secure connection to other services.
+  - **Options:** `"true"` (use secure connection) or `"false"` (use insecure connection).
+  - **Default:** `"false"`
+  - **Usage:** Configures the transport security for GRPC connections.
 
-- **GetGRPCClientOptions() []grpc.DialOption**
-    - Returns options for configuring a gRPC client with logging interceptors and transport credentials based on
-      environment settings.
+### Server-Side Configuration
 
-- **GetGRPCServerLoggerOptions() []grpc.ServerOption**
-    - Returns gRPC server options with logging interceptors.
+- **`GRPC_PORT`**
+    - **Description:** The port on which the GRPC server listens to.
+    - **Default:** `"9090"`
+    - **Usage:** Configures the listening port of the GRPC server.
 
-- **GetGRPCClientLoggerOptions() []grpc.DialOption**
-    - Returns gRPC client options with logging interceptors.
+- **`AUTH_ISSUER`**
+    - **Description:** The URL of the authentication provider.
+    - **Usage:** Specifies the issuer for JWT token verification.
+    - **Required:** Yes
 
-### Database Logging
+### Logging Configuration
 
-- **GetDBQueryHook() bun.QueryHook**
-    - Returns a query hook for logging bun database queries using zap.
+- **`MS_LOG_MODE`**
+    - **Description:** Sets the logging mode for the microservice.
+    - **Options:** `"debug"` (enables debug logging) or any other value (disables debug logging).
+    - **Default:** `"dev"` mode if not specified.
+    - **Usage:** Controls the verbosity of the logs.
 
-### Server Configuration
+### Deployment Mode Configuration
 
-- **CreateBaseServiceServer() (BaseServiceServer, error)**
-    - Creates a `BaseServiceServer` with parameters from environment variables, including `GRPC_PORT` and `AUTH_ISSUER`.
-
-### Token Verification
-
-- **(server baseServiceServer) VerifyToken(ctx context.Context, rawToken string) (Claims, error)**
-    - Verifies a JWT token using the associated auth provider. Returns token claims or an error if verification fails.
-
-### Claims
-
-- **(claims claims) HasRole(role string) bool**
-    - Checks if the claims contain the specified role.
-
-- **(claims claims) GetRoles() sets.Set[string]**
-    - Returns all roles associated with the claims.
-
-### Runtime Environment
-
-- **IsProduction() bool**
-    - Returns `true` if the service is running in production mode, determined by the `MS_MODE` environment variable.
-
-- **HasDebugLogging() bool**
-    - Returns `true` if the service logging level is set to debug, determined by the `MS_LOG_MODE` environment variable.
-
-- **HasSecureConnection() bool**
-    - Returns `true` if the service is configured for secure connections, determined by the `MS_SECURE_CONN` environment
-      variable.
-
-## Types
-
-### Service
-
-Defines a basic microservice with `Host` and `Port`.
-
-- **GetAddr() string**
-    - Returns the address of the service in the format `Host:Port`.
-
-### BaseServiceServer
-
-Interface for a gRPC server that verifies JWT tokens.
-
-- **VerifyToken(ctx context.Context, rawToken string) (Claims, error)**
-    - Verifies a JWT token and returns the token claims if valid.
-
-- **GetPort() string**
-    - Returns the port the server is listening on.
-
-### Claims
-
-Interface for handling JWT token claims.
-
-- **HasRole(role string) bool**
-    - Checks if the claims contain the specified role.
-
-- **GetRoles() sets.Set[string]**
-    - Returns all roles associated with the claims.
+- **`MS_MODE`**
+    - **Description:** Specifies the running mode of the microservice.
+    - **Options:** `"dev"` (development mode) or `"prod"` (production mode).
+    - **Default:** `"dev"`
+    - **Usage:** Determines the mode in which the microservice operates, affecting logging and other settings.
