@@ -17,18 +17,22 @@ const (
 	envRunningMode = "MS_MODE"
 	envLogMode     = "MS_LOG_MODE"
 	envSecureConn  = "MS_SECURE_CONN"
+
+	productionMode   = "prod"
+	developmentMode  = "dev"
+	debugLoggingMode = "debug"
 )
 
 // IsProduction returns true if the microservice is running in production mode.
 func IsProduction() bool {
-	return GetOptionalEnv(envRunningMode, "dev") == "prod"
+	return GetOptionalEnv(envRunningMode, developmentMode) == productionMode
 }
 
 // HasDebugLogging returns true if the microservice logs are set to debug level.
 func HasDebugLogging() bool {
 	value, set := os.LookupEnv(envLogMode)
 	if set {
-		return value == "debug"
+		return value == debugLoggingMode
 	}
 	return !IsProduction()
 }

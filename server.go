@@ -45,7 +45,7 @@ type Claims interface {
 
 // claims provides a basic implementation of Claims.
 type claims struct {
-	roles *sets.Set[string]
+	roles sets.Set[string]
 }
 
 // CreateBaseServiceServer initiates baseServiceServer with parameters from environment variables.
@@ -67,7 +67,7 @@ func CreateBaseServiceServer() (BaseServiceServer, error) {
 // There are two types of roles - realm-wise and client-wise.
 // Realm-wise roles are associated with a user for any client in the realm. Its syntax is just a <role>
 // client-wise roles are associated with a user only for specific client. Its syntax is <client>.<role>.
-func retrieveRoles(token *oidc.IDToken) (*sets.Set[string], error) {
+func retrieveRoles(token *oidc.IDToken) (sets.Set[string], error) {
 	var tokenClaims struct {
 		ResourceAccess map[string]map[string][]string `json:"resource_access"`
 		RealmAccess    map[string][]string            `json:"realm_access"`
@@ -79,8 +79,7 @@ func retrieveRoles(token *oidc.IDToken) (*sets.Set[string], error) {
 	}
 
 	// Claim defined in standards
-	roles := sets.New[string]()
-	sets.Insert(roles, tokenClaims.Roles...)
+	roles := sets.New(tokenClaims.Roles...)
 
 	// KeyCloak specific claims
 	if realmRoles, exists := tokenClaims.RealmAccess[rolesKey]; exists {
@@ -96,7 +95,7 @@ func retrieveRoles(token *oidc.IDToken) (*sets.Set[string], error) {
 			sets.Insert(roles, formattedRoles...)
 		}
 	}
-	return &roles, nil
+	return roles, nil
 }
 
 // VerifyToken implements BaseServiceServer.VerifyToken using auth provider associated with this baseServiceServer.
