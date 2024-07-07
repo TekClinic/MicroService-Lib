@@ -10,6 +10,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	grpcStartTimeKey = "grpc.start_time"
+)
+
 func init() { //nolint:gochecknoinits // required for logger initialization
 	// Initialize logger
 	logger := zap.Must(zap.NewProduction())
@@ -63,7 +67,7 @@ func interceptorLogger(l *zap.Logger) logging.Logger {
 
 		for i := 0; i < len(fields); i += 2 {
 			key := fields[i]
-			if key == "grpc.start_time" {
+			if key == grpcStartTimeKey {
 				continue
 			}
 			value := fields[i+1]
